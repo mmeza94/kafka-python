@@ -10,4 +10,5 @@ jmespath==1.0.1
 ipykernel
 avro-python3
 confluent-kafka
+xmltodict
 
