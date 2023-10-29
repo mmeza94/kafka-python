@@ -40,7 +40,7 @@ class KafkaClient(Enum):
 
 class KafkaConnection:
     def __init__(self,config:KafkaConfigurations) -> None:
-        self.config = config
+        self.config:KafkaConfigurations = config
         self.serializers = {
             "utf-8":lambda x : json.dumps(x).encode("utf-8")
         }
@@ -115,9 +115,9 @@ class KafkaDataAccess:
         with self.connection.initialize(KafkaClient.consumer) as client:
             pass
 
-    def create_topics(self):
+    def create_topics(self,topic_name,num_partitions=1,replication_factor=1):
         with self.connection.initialize(KafkaClient.admin) as client:
-            topic = NewTopic(name=self.config.topic,num_partitions=self.config.num_partitions)
+            topic = NewTopic(name=topic_name,num_partitions=num_partitions,replication_factor=replication_factor)
             client.create_topics([topic])
 
     def delete_topics(self,topic):
@@ -132,6 +132,7 @@ class ConfigurationsManager:
         self.config = self._get_config()
         self.kafka_config:KafkaConfigurations = self._get_kafka_config()
 
+
     def _get_local_config(self):
         print("Loading config form local path")
         config = json.load(open("/workspaces/kafka-python/config.json"))
@@ -145,25 +146,25 @@ class ConfigurationsManager:
     def _get_kafka_config(self):
         return KafkaConfigurations(**self.config["kafka"])
 
-
-
-
-
-
-
-message = {
-    "Id":777,
-    "product":"Iphone17"
+# message = {
+#     "Id":777,
+#     "product":"Iphone17"
+# }
+message2 = {
+    "Id":888,
+    "product":"Iphone1"
 }
-
-
+message3 = {
+    "Id":999,
+    "product":"Iphone3"
+}
 
 
 
 config_manager = ConfigurationsManager(debug=True)
 kafka = KafkaDataAccess(config_manager.kafka_config)
-kafka.send_messages([message])
-
+kafka.send_messages([message2,message3])
+# kafka.create_topics(topic_name="tpc-test")
 
 
 
