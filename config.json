@@ -4,8 +4,13 @@
     },
     "kafka":{
         "bootstrap_servers":"host.docker.internal:9092",
-        "value_serializer":"xml_utf8",
-        "on_success":true
+        "value_serializer":"json_utf8",
+        "on_success":true,
+        "group_id":"groupd_3",
+        "auto_offset_reset":"earliest",
+        "enable_auto_commit":true,
+        "value_deserializer":"json_utf8",
+        "topic_name":"tpc-test"
     }
     
 }

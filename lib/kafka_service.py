@@ -26,9 +26,14 @@ class KafkaService:
                       .add_callback(self._on_success)\
                       .add_errback(self._on_failure)
 
-    def read_topic(self):
+    def read_topic(self,limit:int):
         with self.connection.initialize(KafkaClient.consumer) as client:
-            pass
+            messages = []
+            for i,message in enumerate(client,start=1):
+                messages.append(message)
+                if i == limit:
+                    break
+            return messages
 
     def create_topics(self,topic_props:list[Topic]):
         with self.connection.initialize(KafkaClient.admin) as client:

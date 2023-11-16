@@ -6,7 +6,7 @@ from lib.kafka_schemas import KafkaConfigurations
 class ConfigurationsManager:
     def  __init__(self,debug=False) -> None:
         self.debug = debug
-        self.config = self._get_config()
+        self._config = self._get_config()
         self.kafka_config:KafkaConfigurations = self._get_kafka_config()
 
 
@@ -18,7 +18,8 @@ class ConfigurationsManager:
     def _get_config(self):
         if self.debug:
             config = self._get_local_config()
+        #TODO agregar get config de azure
         return config
 
     def _get_kafka_config(self):
-        return KafkaConfigurations(**self.config["kafka"])
+        return KafkaConfigurations(**self._config["kafka"])

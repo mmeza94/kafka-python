@@ -1,8 +1,6 @@
 from kafka import KafkaConsumer,KafkaProducer
 from kafka.admin import KafkaAdminClient
 import contextlib
-import json
-import xmltodict
 from lib.kafka_schemas import KafkaConfigurations,KafkaClient
 from lib.serializers import SerializerRegistry
 
@@ -12,9 +10,23 @@ class KafkaConnection:
     def __init__(self,config:KafkaConfigurations) -> None:
         self.config:KafkaConfigurations = config
         self.serializer_registry:SerializerRegistry = SerializerRegistry()
+        
+    def _prepare_consumer_configurations(self):
+        consumer_config = self.config.to_dict()
+        consumer_config.pop("value_serializer")
+        consumer_config.pop("on_success")
+        consumer_config.pop("on_failure")
+        return consumer_config
 
     def _get_consumer(self):
-        return KafkaConsumer()
+        consumer_config = self._prepare_consumer_configurations()
+        topic_name = consumer_config.pop("topic_name")
+        value_deserializer = self.serializer_registry.get_deserializer(consumer_config.pop("value_deserializer"))
+        return KafkaConsumer(
+            topic_name,
+            **consumer_config,
+            value_deserializer=value_deserializer
+        )
 
     def _get_producer(self):
         return KafkaProducer(
@@ -38,7 +50,7 @@ class KafkaConnection:
             elif kafka_client == KafkaClient.admin:
                 client = self._get_admin()
             else:
-                raise ValueError(f"Unknown Kafka client type: {kafka_client}")
+                raise ValueError(f"Unsupported Kafka client type: {kafka_client}")
             yield client
         except Exception as ex:
             raise 

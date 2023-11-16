@@ -15,6 +15,10 @@ class KafkaConfigurations(Configurations):
     value_deserializer:object=None
     on_success:bool=False
     on_failure:bool=False
+    enable_auto_commit:bool=True
+    auto_offset_reset:str=None
+    group_id:str=None
+    topic_name:str=None
 
 
 @dataclass
